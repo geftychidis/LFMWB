@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LFMWB Evaluation Mission - Interactive Map</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2E8B57 0%, #228B22 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .main-container {
+            display: flex;
+            height: calc(100vh - 120px);
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .map-container {
+            flex: 2;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .sidebar {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 160px);
+        }
+        
+        .sidebar h3 {
+            color: #2E8B57;
+            margin-top: 0;
+            border-bottom: 2px solid #2E8B57;
+            padding-bottom: 10px;
+        }
+        
+        .location-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2E8B57;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .location-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .location-item.active {
+            background: #e8f5e8;
+            border-left-color: #228B22;
+        }
+        
+        .location-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .location-dates {
+            font-size: 12px;
+            color: #666;
+            background: #2E8B57;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        
+        .location-orgs {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .route-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .route-controls button {
+            background: #2E8B57;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 2px;
+            font-size: 12px;
+        }
+        
+        .route-controls button:hover {
+            background: #228B22;
+        }
+        
+        .stats-panel {
+            background: #e8f5e8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2E8B57;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .custom-popup {
+            min-width: 250px;
+        }
+        
+        .popup-content {
+            padding: 5px;
+        }
+        
+        .popup-title {
+            font-weight: bold;
+            color: #2E8B57;
+            margin-bottom: 5px;
+        }
+        
+        .popup-dates {
+            background: #2E8B57;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        
+        .popup-orgs {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .map-container {
+                height: 400px;
+            }
+            
+            .sidebar {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🗺️ LFMWB Evaluation Mission</h1>
+        <p>Interactive Travel Route & Schedule | October 13-24, 2025 | Western Balkans</p>
+    </div>
+    
+    <div class="main-container">
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="route-controls">
+                <button onclick="showFullRoute()">Show Route</button>
+                <button onclick="fitToBounds()">Fit View</button>
+                <button onclick="toggleAnimation()">Animate</button>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <h3>📍 Mission Locations</h3>
+            
+            <div class="location-item" data-location="0">
+                <div class="location-title">🏛️ Skopje, North Macedonia 🇲🇰</div>
+                <div class="location-dates">Oct 13-15, 2025</div>
+                <div class="location-orgs">Farmahem (REA), Ministry of Agriculture, RFMC, National LFM Network</div>
+            </div>
+            
+            <div class="location-item" data-location="1">
+                <div class="location-title">💼 Prishtina, Kosovo 🇽🇰</div>
+                <div class="location-dates">Oct 16, 2025</div>
+                <div class="location-orgs">Ministry of Agriculture, National LFM Network, Peer Educators Network</div>
+            </div>
+            
+            <div class="location-item" data-location="2">
+                <div class="location-title">🌿 Nis, Serbia 🇷🇸</div>
+                <div class="location-dates">Oct 17, 2025</div>
+                <div class="location-orgs">Biological Society "Dr. Sava Petrović", CBC Fund Grantee</div>
+            </div>
+            
+            <div class="location-item" data-location="3">
+                <div class="location-title">🏰 Belgrade, Serbia 🇷🇸</div>
+                <div class="location-dates">Oct 18-20, 2025</div>
+                <div class="location-orgs">Ministry of Agriculture, National LFM Network, Helvetas Serbia</div>
+            </div>
+            
+            <div class="location-item" data-location="4">
+                <div class="location-title">🌲 Srbac, Republika Srpska 🇧🇦</div>
+                <div class="location-dates">Oct 21, 2025</div>
+                <div class="location-orgs">C.E.Z.A.R. Organization, CBC Fund Grantee</div>
+            </div>
+            
+            <div class="location-item" data-location="5">
+                <div class="location-title">🌳 Banja Luka, Republika Srpska 🇧🇦</div>
+                <div class="location-dates">Oct 22, 2025</div>
+                <div class="location-orgs">Ministry of Agriculture (RS), LFM Network</div>
+            </div>
+            
+            <div class="location-item" data-location="6">
+                <div class="location-title">🏛️ Sarajevo, Federation of BiH 🇧🇦</div>
+                <div class="location-dates">Oct 23-24, 2025</div>
+                <div class="location-orgs">Federal Ministry of Agriculture, LFM Network, FEA Organization</div>
+            </div>
+            
+            <div class="stats-panel">
+                <h4 style="color: #2E8B57; margin: 0 0 10px 0;">Mission Statistics</h4>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Days</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">7</div>
+                        <div class="stat-label">Cities</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Countries</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">25+</div>
+                        <div class="stat-label">Organizations</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    
+    <script>
+        // Mission locations with coordinates
+        const locations = [
+            {
+                name: "Skopje, North Macedonia",
+                coords: [41.9973, 21.4280],
+                dates: "Oct 13-15, 2025",
+                flag: "🇲🇰",
+                icon: "🏛️",
+                organizations: [
+                    "Farmahem (REA) - Regional Executing Agency",
+                    "Ministry of Agriculture, Forestry & Water Economy",
+                    "Regional Fire Monitoring Center (RFMC)",
+                    "National LFM Network (MKD)",
+                    "CBC Fund Grantees (1-2 projects)"
+                ]
+            },
+            {
+                name: "Prishtina, Kosovo",
+                coords: [42.6629, 21.1655],
+                dates: "Oct 16, 2025",
+                flag: "🇽🇰",
+                icon: "💼",
+                organizations: [
+                    "Ministry of Agriculture, Forestry & Rural Development",
+                    "National LFM Network (Kosovo)",
+                    "Peer Educators Network - CBC Fund Grantee"
+                ]
+            },
+            {
+                name: "Nis, Serbia",
+                coords: [43.3209, 21.8958],
+                dates: "Oct 17, 2025",
+                flag: "🇷🇸",
+                icon: "🌿",
+                organizations: [
+                    "Biological Society \"Dr. Sava Petrović\"",
+                    "CBC Fund Grantee Meeting"
+                ]
+            },
+            {
+                name: "Belgrade, Serbia",
+                coords: [44.7866, 20.4489],
+                dates: "Oct 18-20, 2025",
+                flag: "🇷🇸",
+                icon: "🏰",
+                organizations: [
+                    "Weekend Rest & Summary Days (Oct 18-19)",
+                    "Ministry of Agriculture, Forestry & Water Management",
+                    "National LFM Network (Serbia)",
+                    "Helvetas Serbia - LFMWB Backstopper"
+                ]
+            },
+            {
+                name: "Srbac, Republika Srpska",
+                coords: [45.0967, 17.5253],
+                dates: "Oct 21, 2025",
+                flag: "🇧🇦",
+                icon: "🌲",
+                organizations: [
+                    "C.E.Z.A.R. Organization",
+                    "CBC Fund Grantee Meeting"
+                ]
+            },
+            {
+                name: "Banja Luka, Republika Srpska",
+                coords: [44.7722, 17.1910],
+                dates: "Oct 22, 2025",
+                flag: "🇧🇦",
+                icon: "🌳",
+                organizations: [
+                    "Ministry of Agriculture, Forestry & Water Management (RS)",
+                    "LFM Network (Republika Srpska)"
+                ]
+            },
+            {
+                name: "Sarajevo, Federation of BiH",
+                coords: [43.8563, 18.4131],
+                dates: "Oct 23-24, 2025",
+                flag: "🇧🇦",
+                icon: "🏛️",
+                organizations: [
+                    "Federal Ministry of Agriculture, Water Management & Forestry",
+                    "LFM Network (Federation BiH)",
+                    "FEA - Forestry & Environmental Action (Cross-border CBC)",
+                    "Online Debriefing with SDC, Embassy & Farmahem",
+                    "Final Departure Point"
+                ]
+            }
+        ];
+        
+        // Initialize map
+        const map = L.map('map').setView([43.5, 19.5], 6);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Store markers and route line
+        let markers = [];
+        let routeLine = null;
+        let animationTimeout = null;
+        let isAnimating = false;
+        
+        // Create custom icons for different location types
+        function createCustomIcon(icon, color = '#2E8B57') {
+            return L.divIcon({
+                html: `<div style="
+                    background: ${color};
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    border: 3px solid white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+                ">${icon}</div>`,
+                className: 'custom-div-icon',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20],
+                popupAnchor: [0, -20]
+            });
+        }
+        
+        // Add markers for each location
+        locations.forEach((location, index) => {
+            const popupContent = `
+                <div class="popup-content">
+                    <div class="popup-title">${location.icon} ${location.name} ${location.flag}</div>
+                    <div class="popup-dates">${location.dates}</div>
+                    <div class="popup-orgs">
+                        ${location.organizations.map(org => `• ${org}`).join('<br>')}
+                    </div>
+                </div>
+            `;
+            
+            const marker = L.marker(location.coords, {
+                icon: createCustomIcon(location.icon)
+            }).addTo(map);
+            
+            marker.bindPopup(popupContent, {
+                className: 'custom-popup',
+                maxWidth: 300
+            });
+            
+            markers.push(marker);
+        });
+        
+        // Add route line
+        function showFullRoute() {
+            if (routeLine) {
+                map.removeLayer(routeLine);
+                routeLine = null;
+            }
+            
+            const routeCoords = locations.map(loc => loc.coords);
+            routeLine = L.polyline(routeCoords, {
+                color: '#2E8B57',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 5'
+            }).addTo(map);
+            
+            // Stop animation when showing route
+            stopAnimation();
+        }
+        
+        // Fit map to bounds
+        function fitToBounds() {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+            
+            // Stop animation when fitting bounds
+            stopAnimation();
+        }
+        
+        // Stop animation function
+        function stopAnimation() {
+            if (animationTimeout) {
+                clearTimeout(animationTimeout);
+                animationTimeout = null;
+            }
+            isAnimating = false;
+            
+            // Clear active sidebar items
+            document.querySelectorAll('.location-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Update button text
+            const animateBtn = document.querySelector('button[onclick="toggleAnimation()"]');
+            if (animateBtn) {
+                animateBtn.textContent = 'Animate';
+            }
+        }
+        
+        // Animate through locations
+        function toggleAnimation() {
+            const animateBtn = document.querySelector('button[onclick="toggleAnimation()"]');
+            
+            if (isAnimating) {
+                // Stop animation
+                stopAnimation();
+                return;
+            }
+            
+            // Start animation
+            isAnimating = true;
+            animateBtn.textContent = 'Stop';
+            
+            let currentIndex = 0;
+            
+            function animateNext() {
+                if (!isAnimating || currentIndex >= locations.length) {
+                    if (currentIndex >= locations.length) {
+                        currentIndex = 0;
+                    }
+                    if (!isAnimating) return;
+                }
+                
+                const location = locations[currentIndex];
+                map.setView(location.coords, 10, { animate: true, duration: 1.5 });
+                
+                // Highlight sidebar item
+                document.querySelectorAll('.location-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const activeItem = document.querySelector(`[data-location="${currentIndex}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
+                
+                // Open popup
+                setTimeout(() => {
+                    if (isAnimating && markers[currentIndex]) {
+                        markers[currentIndex].openPopup();
+                    }
+                }, 800);
+                
+                currentIndex++;
+                
+                if (isAnimating) {
+                    animationTimeout = setTimeout(animateNext, 3000);
+                }
+            }
+            
+            animateNext();
+        }
+        
+        // Sidebar interaction
+        document.querySelectorAll('.location-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                // Stop animation when user clicks a location
+                stopAnimation();
+                
+                const location = locations[index];
+                map.setView(location.coords, 12, { animate: true });
+                
+                if (markers[index]) {
+                    markers[index].openPopup();
+                }
+                
+                // Highlight active item
+                document.querySelectorAll('.location-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+        
+        // Initialize with full route shown
+        setTimeout(() => {
+            showFullRoute();
+            fitToBounds();
+        }, 500);
+    </script>
+</body>
+</html>
