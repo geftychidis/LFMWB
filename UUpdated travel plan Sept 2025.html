@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LFMWB Evaluation Mission — Interactive Map & Plan (26 Oct – 7 Nov 2025)</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+
+<style>
+  :root {
+    --green:#2E8B57; --green2:#228B22; --bg1:#f5f7fa; --bg2:#c3cfe2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%)}
+  .header{background:linear-gradient(135deg,var(--green) 0%,var(--green2) 100%);color:#fff;padding:20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+  .header h1{margin:0;font-size:28px}
+  .header p{margin:6px 0 0;opacity:.95}
+  .main{display:flex;gap:20px;padding:20px;height:calc(100vh - 120px)}
+  .panel{background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .map-wrap{position:relative;flex:2;overflow:hidden}
+  #map{height:100%;width:100%}
+  .sidebar{flex:1;display:flex;flex-direction:column;gap:16px;overflow:auto;max-height:calc(100vh - 160px);padding:16px}
+  .card{padding:16px}
+  .card h3{margin:0 0 10px;color:var(--green);border-bottom:2px solid var(--green);padding-bottom:8px}
+  .loc{background:#f8f9fa;border-left:4px solid var(--green);border-radius:10px;padding:12px;margin-bottom:12px;cursor:pointer;transition:.25s}
+  .loc:hover{transform:translateX(4px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+  .loc.active{background:#e8f5e8;border-left-color:var(--green2)}
+  .loc .t{font-weight:bold;margin-bottom:4px}
+  .loc .d{display:inline-block;font-size:12px;background:var(--green);color:#fff;padding:3px 8px;border-radius:4px;margin:4px 0 8px}
+  .loc .org{font-size:12px;color:#444;line-height:1.4}
+  .controls{position:absolute;top:10px;right:10px;z-index:999;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+  .controls button{background:var(--green);color:#fff;border:0;padding:7px 10px;border-radius:4px;margin:2px;font-size:12px;cursor:pointer}
+  .controls button:hover{background:var(--green2)}
+  .stats{background:#e8f5e8;border-radius:10px;padding:14px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{text-align:center;background:#fff;padding:10px;border-radius:8px}
+  .stat .n{font-weight:bold;font-size:20px;color:var(--green)}
+  .stat .l{font-size:11px;color:#666}
+  .hotels, .contacts{font-size:13px;line-height:1.45}
+  .hotels b, .contacts b{color:#333}
+  .small{font-size:12px;color:#555}
+  .popup .title{font-weight:bold;color:var(--green);margin-bottom:4px}
+  .popup .dates{display:inline-block;background:var(--green);color:#fff;font-size:11px;padding:3px 8px;border-radius:4px;margin:4px 0 8px}
+  .popup ul{margin:6px 0 0 18px;padding:0}
+  .popup li{margin:3px 0}
+  @media (max-width: 900px){
+    .main{flex-direction:column;height:auto}
+    .map-wrap{height:420px}
+    .sidebar{max-height:none}
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>🗺️ LFMWB External Evaluation Mission</h1>
+    <p>Interactive Travel Route, Meetings & Logistics • 26 Oct – 7 Nov 2025 • Western Balkans</p>
+  </div>
+
+  <div class="main">
+    <div class="panel map-wrap">
+      <div id="map"></div>
+      <div class="controls">
+        <button onclick="showRoute()">Show Route</button>
+        <button onclick="fitAll()">Fit View</button>
+        <button onclick="toggleAnim()" id="animBtn">Animate</button>
+      </div>
+    </div>
+
+    <div class="panel sidebar">
+      <div class="card">
+        <h3>📍 Mission Locations</h3>
+
+        <div class="loc" data-i="0">
+          <div class="t">🏛️ Skopje, North Macedonia 🇲🇰</div>
+          <div class="d">Oct 26–30, 2025</div>
+          <div class="org small">Farmahem (REA); MAFWE; RFMC; Public Enterprise “Pastures” (29 Oct, in Skopje) • Buffer/optional interviews on 27 Oct.</div>
+        </div>
+
+        <div class="loc" data-i="1">
+          <div class="t">🧭 Radoviš, North Macedonia 🇲🇰</div>
+          <div class="d">Oct 29, 2025 (site visit)</div>
+          <div class="org small">CBC: LAG Plackovica — Mr. Stole Georgiev. Same-day return to Skopje.</div>
+        </div>
+
+        <div class="loc" data-i="2">
+          <div class="t">💼 Prishtina, Kosovo 🇽🇰</div>
+          <div class="d">Oct 30, 2025 (same-day)</div>
+          <div class="org small">MAFRD; Kosovo Forestry Agency (Dir. for Forest Management); CBC: Peer Educators Network. Return to Skopje.</div>
+        </div>
+
+        <div class="loc" data-i="3">
+          <div class="t">🌿 Niš, Serbia 🇷🇸</div>
+          <div class="d">Oct 31, 2025 (AM)</div>
+          <div class="org small">CBC: Biological Society “Dr. Sava Petrović”. Transfer to Belgrade PM.</div>
+        </div>
+
+        <div class="loc" data-i="4">
+          <div class="t">🏰 Belgrade, Serbia 🇷🇸</div>
+          <div class="d">Oct 31 – Nov 3, 2025</div>
+          <div class="org small">Weekend 1–2 Nov (summary/free). 3 Nov: Directorate of Forests; Faculty of Forestry; Helvetas Serbia.</div>
+        </div>
+
+        <div class="loc" data-i="5">
+          <div class="t">🌲 Srbac, Republika Srpska (BiH) 🇧🇦</div>
+          <div class="d">Nov 4, 2025</div>
+          <div class="org small">CBC: Association “C.E.Z.A.R.”. Transfer to Banja Luka.</div>
+        </div>
+
+        <div class="loc" data-i="6">
+          <div class="t">🌳 Banja Luka, Republika Srpska (BiH) 🇧🇦</div>
+          <div class="d">Nov 5, 2025</div>
+          <div class="org small">RS Ministry of Agriculture, Forestry & Water Management; Public Enterprise “Šume Republike Srpske”. PM transfer to Sarajevo.</div>
+        </div>
+
+        <div class="loc" data-i="7">
+          <div class="t">🏛️ Sarajevo, Federation of BiH 🇧🇦</div>
+          <div class="d">Nov 5 (late) – Nov 7, 2025</div>
+          <div class="org small">6 Nov: Federal MoA Water Mgmt & Forestry; Federal Civil Protection Agency; FEA (CBC). 7 Nov departures.</div>
+        </div>
+
+        <div class="stats">
+          <h4 style="margin:0;color:var(--green)">Mission Statistics</h4>
+          <div class="grid" style="margin-top:10px">
+            <div class="stat"><div class="n">13</div><div class="l">Days</div></div>
+            <div class="stat"><div class="n">8</div><div class="l">Cities</div></div>
+            <div class="stat"><div class="n">4</div><div class="l">Countries</div></div>
+            <div class="stat"><div class="n">25+</div><div class="l">Organizations</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card hotels">
+        <h3>🏨 Hotels (per city)</h3>
+        <b>Skopje (26–30 Oct)</b><br/>
+        • Hotel City Park — ≈ EUR 65 | Shuttle ≈ EUR 30 | Walk to MAFWE/RFMC. (Recommended)<br/>
+        • Park Hotel & Spa — ≈ EUR 165 | 5★ spa | 10–15′ walk. :contentReference[oaicite:2]{index=2}
+        <br/><br/>
+
+        <b>Belgrade (31 Oct – 3 Nov)</b><br/>
+        • Belgrade Art Hotel — ≈ EUR 105 | Central; near Faculty of Forestry. (Recommended)<br/>
+        • Putnik Inn Belgrade — ≈ EUR 75 | New Belgrade; closer to Ministry/Helvetas. :contentReference[oaicite:3]{index=3}
+        <br/><br/>
+
+        <b>Banja Luka (night 4 Nov)</b><br/>
+        • Courtyard by Marriott — ≈ EUR 74–89 | Intl. standard; central. (Recommended)<br/>
+        • Hotel Integra — ≈ EUR 59 | Central, budget alternative. :contentReference[oaicite:4]{index=4}
+        <br/><br/>
+
+        <b>Sarajevo (5–7 Nov)</b><br/>
+        • Courtyard by Marriott — ≈ EUR 120 | Intl. standard; walkable to Federal Ministry/FEA. (Recommended)<br/>
+        • Aparthotel Centar — Lower cost; apartment style; less convenient for schedule. :contentReference[oaicite:5]{index=5}
+      </div>
+
+      <div class="card contacts">
+        <h3>🚗 Local Contacts / Drivers</h3>
+        <b>Skopje (MKD):</b> Ida Blaževska — ida.blazevska@gmail.com — +389 71 277 193<br/>
+        <b>Prishtina (KS):</b> Edmond Gjonbalaj — edmondgjonbalaj@gmail.com — +383 44 384 841<br/>
+        <b>Republika Srpska (BiH):</b> Dejan Milinović — dejan.milinovic@flf.unibl.org — +387 65 870 046<br/>
+        <b>Sarajevo (FBiH):</b> Benjamin Sarhatlić — info@agencijaprevod.ba — +387 61 393 777 :contentReference[oaicite:6]{index=6}
+        <div class="small" style="margin-top:8px">
+          Overnights: Skopje (26–30 Oct), Belgrade (31 Oct–3 Nov), Banja Luka (4 Nov), Sarajevo (5–6 Nov). Depart 7 Nov. :contentReference[oaicite:7]{index=7}
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  // --- Data (from mission plan / hotels) ---
+  const locations = [
+    {
+      name:"Skopje, North Macedonia", flag:"🇲🇰", icon:"🏛️",
+      coords:[41.9973,21.4280],
+      dates:"Oct 26–30, 2025",
+      details:[
+        "27 Oct: buffer / optional interviews (TBD)",
+        "28 Oct: Farmahem (REA) — C. Nikolovski; M. Sterjovska; K. Atanasovska; J. P. Andonovska; S. Shosholceva",
+        "28 Oct: MAFWE — Mr. Jordan Zdravkovski (CFP) [interp: Yes]",
+        "28 Oct: RFMC — Prof. Nikola Nikolov; Mr. Jakob Kiprovski; Mr. Velian Jagev",
+        "29 Oct AM (Skopje): Public Enterprise “Pastures” — Ms. Tatjana Milcevska [interp: Yes]"
+      ]
+    },
+    {
+      name:"Radoviš, North Macedonia", flag:"🇲🇰", icon:"🧭",
+      coords:[41.6383,22.4647],
+      dates:"Oct 29, 2025",
+      details:[
+        "CBC site visit: LAG Plackovica — Mr. Stole Georgiev",
+        "Same-day return to Skopje"
+      ]
+    },
+    {
+      name:"Prishtina, Kosovo", flag:"🇽🇰", icon:"💼",
+      coords:[42.6629,21.1655],
+      dates:"Oct 30, 2025 (same-day)",
+      details:[
+        "MAFRD (Kosovo) — Mr. Tahir Ahmeti (CFP) [interp: Yes]",
+        "Kosovo Forestry Agency — Directorate for Forest Management — Mr. Menderes Ibra",
+        "CBC: Peer Educators Network",
+        "Return to Skopje"
+      ]
+    },
+    {
+      name:"Niš, Serbia", flag:"🇷🇸", icon:"🌿",
+      coords:[43.3209,21.8958],
+      dates:"Oct 31, 2025 (AM)",
+      details:[
+        "CBC: Biological Society “Dr. Sava Petrović” (meeting)",
+        "PM transfer to Belgrade"
+      ]
+    },
+    {
+      name:"Belgrade, Serbia", flag:"🇷🇸", icon:"🏰",
+      coords:[44.7866,20.4489],
+      dates:"Oct 31 – Nov 3, 2025",
+      details:[
+        "1–2 Nov: Weekend (summary/free)",
+        "3 Nov: Directorate of Forests — Mr. Vladimir Nikolić (CFP)",
+        "3 Nov: Faculty of Forestry (Univ. of Belgrade) — Prof. Slobodan Milanović",
+        "3 Nov: Helvetas Serbia — Mr. Nenad Celarevic"
+      ]
+    },
+    {
+      name:"Srbac, Republika Srpska (BiH)", flag:"🇧🇦", icon:"🌲",
+      coords:[45.0967,17.5253],
+      dates:"Nov 4, 2025",
+      details:[
+        "CBC: Association “C.E.Z.A.R.”",
+        "Transfer to Banja Luka"
+      ]
+    },
+    {
+      name:"Banja Luka, Republika Srpska (BiH)", flag:"🇧🇦", icon:"🌳",
+      coords:[44.7722,17.1910],
+      dates:"Nov 5, 2025",
+      details:[
+        "RS Ministry of Agriculture, Forestry & Water Management — Mr. Slavko Stupar (CFP) [interp: Yes]",
+        "Public Enterprise “Šume Republike Srpske” — Mr. Saša Ljubojević",
+        "PM transfer to Sarajevo"
+      ]
+    },
+    {
+      name:"Sarajevo, Federation of BiH", flag:"🇧🇦", icon:"🏛️",
+      coords:[43.8563,18.4131],
+      dates:"Nov 5 (late) – Nov 7, 2025",
+      details:[
+        "6 Nov: Federal MoA, Water Mgmt & Forestry — Mr. Emir Caushević (CFP) [interp: Yes]",
+        "6 Nov: Federal Civil Protection Agency — Mr. Ramo Dautbašić [interp: Yes]",
+        "6 Nov: FEA — Forestry & Environmental Action (CBC, BiH/SRB)",
+        "6 Nov: Online debrief — Evaluators; SDC; Embassy of Switzerland (MK); Farmahem",
+        "7 Nov: Depart to Switzerland & Greece"
+      ]
+    }
+  ];
+
+  // --- Map init ---
+  const map = L.map('map').setView([43.4, 20.3], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors'}).addTo(map);
+
+  function iconBadge(emoji, bg='#2E8B57'){
+    return L.divIcon({
+      html:`<div style="background:${bg};width:40px;height:40px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,.3)">${emoji}</div>`,
+      className:'x', iconSize:[40,40], iconAnchor:[20,20], popupAnchor:[0,-18]
+    });
+  }
+
+  const markers=[];
+  let route=null, animTimer=null, animOn=false;
+
+  function popupHtml(loc){
+    const li = loc.details.map(x=>`<li>${x}</li>`).join('');
+    return `
+      <div class="popup">
+        <div class="title">${loc.icon} ${loc.name} ${loc.flag}</div>
+        <div class="dates">${loc.dates}</div>
+        <ul>${li}</ul>
+      </div>`;
+  }
+
+  locations.forEach((loc,i)=>{
+    const m = L.marker(loc.coords,{icon:iconBadge(loc.icon)}).addTo(map);
+    m.bindPopup(popupHtml(loc),{maxWidth:320});
+    markers.push(m);
+  });
+
+  function showRoute(){
+    if(route){ map.removeLayer(route); route=null; }
+    const coords = locations.map(l=>l.coords);
+    route = L.polyline(coords,{color:'#2E8B57',weight:4,opacity:.85,dashArray:'10,5',lineCap:'round',lineJoin:'round'}).addTo(map);
+    fitAll();
+    stopAnim();
+  }
+
+  function fitAll(){
+    const group = new L.featureGroup([...(route?[route]:[]), ...markers]);
+    map.fitBounds(group.getBounds().pad(0.08));
+    stopAnim();
+  }
+
+  function stopAnim(){
+    if(animTimer){ clearTimeout(animTimer); animTimer=null; }
+    animOn=false;
+    document.querySelectorAll('.loc').forEach(el=>el.classList.remove('active'));
+    const btn=document.getElementById('animBtn'); if(btn) btn.textContent='Animate';
+  }
+
+  function toggleAnim(){
+    const btn=document.getElementById('animBtn');
+    if(animOn){ stopAnim(); return; }
+    animOn=true; btn.textContent='Stop';
+    let i=0;
+    const step=()=>{
+      if(!animOn) return;
+      const loc=locations[i];
+      map.setView(loc.coords, 11, {animate:true,duration:1.2});
+      markers[i].openPopup();
+      document.querySelectorAll('.loc').forEach(el=>el.classList.remove('active'));
+      const active=document.querySelector(`.loc[data-i="${i}"]`); if(active) active.classList.add('active');
+      i=(i+1)%locations.length;
+      animTimer=setTimeout(step, 3000);
+    };
+    step();
+  }
+
+  // Sidebar click handlers
+  document.querySelectorAll('.loc').forEach((el)=>{
+    el.addEventListener('click', ()=>{
+      stopAnim();
+      const i=+el.dataset.i;
+      map.setView(locations[i].coords, 12, {animate:true});
+      markers[i].openPopup();
+      document.querySelectorAll('.loc').forEach(e=>e.classList.remove('active'));
+      el.classList.add('active');
+    });
+  });
+
+  // Initial view
+  setTimeout(()=>{ showRoute(); }, 400);
+</script>
+</body>
+</html>
