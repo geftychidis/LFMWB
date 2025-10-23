@@ -8,12 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
 
 <style>
-  :root { 
-    --green:#2E8B57; 
-    --green2:#228B22; /* Σωστή ορισμός για χρήση στο hover */
-    --bg1:#f5f7fa; 
-    --bg2:#c3cfe2; 
-  }
+  :root { --green:#2E8B57; --green2:#228B22; --bg1:#f5f7fa; --bg2:#c3cfe2; }
   *{box-sizing:border-box}
   body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%)}
   .header{background:linear-gradient(135deg,var(--green) 0%,var(--green2) 100%);color:#fff;padding:20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,1)}
@@ -24,7 +19,7 @@
   .panel{background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
   .map-wrap{position:relative;flex:2;overflow:hidden;display:flex;min-height:520px;height:100%}
   #map{flex:1;min-height:520px;width:100%;background:#eef3f7}
-  .sidebar{flex:1;display:flex;flex-direction:column;gap:16px;overflow-y:auto; /* Χρήση overflow-y για καλύτερο έλεγχο */ max-height:calc(100vh - 190px);padding:16px}
+  .sidebar{flex:1;display:flex;flex-direction:column;gap:16px;overflow:auto;max-height:calc(100vh - 190px);padding:16px}
   /* ----- UI ----- */
   .card{padding:16px}
   .card h3{margin:0 0 10px;color:var(--green);border-bottom:2px solid var(--green);padding-bottom:8px}
@@ -75,82 +70,77 @@
 
     <div class="panel sidebar">
       <div class="card">
-        <h3>📍 Mission Locations</h3>
+        <h3>📍 Mission Locations (Agenda v. 22.10.2025)</h3>
 
-        <div class="loc" data-i="0" tabindex="0" role="button" aria-label="Skopje, North Macedonia: Oct 27–30, 2025">
+        <div class="loc" data-i="0">
           <div class="t">🏛️ Skopje, North Macedonia 🇲🇰</div>
           <div class="d">Oct 27–30, 2025</div>
           <div class="org small">
-            28 Oct: Farmahem (REA) — C. Nikolovski; M. Sterjovska; K. Atanasovska; J. P. Andonovska; S. Shosholceva.<br/>
-            28 Oct: MAFWE — Mr. Jordan Zdravkovski (CFP) [interp: Yes].<br/>
-            28 Oct: RFMC — Prof. Nikola Nikolov; Mr. Jakob Kiprovski; Mr. Velian Jagev.<br/>
-            29 Oct (AM): Public Enterprise “Pastures” — Ms. Tatjana Milcevska [interp: Yes].<br/>
-            29 Oct (11:00–12:00): Meeting with Bojan Mihajlovski (CPS).
+            **27 Oct (Day 1):** Meeting at **Swiss Embassy** (C. Thönissen, S. Dodeva) **10:00–11:30**.<br/>
+            **27 Oct (Online):** Mr. Srdjan Pejovic (CFP, MNE); Mr. Ylli Hoxha (CFP, ALB); Mr. Arjol Lila (CPS, ALB).<br/>
+            **28 Oct (Day 2):** **Farmahem (REA)**; **MAFWE** (Mr. Jordan Zdravkovski, CFP) [interp: Yes]; **RFMC** (Prof. Nikola Nikolov, J. Kiprovski, V. Jagev, **M. Risteski**).<br/>
+            **29 Oct (Day 3):** **Public Enterprise “Pastures”** (Ms. Tatjana Milcevska, Stakeholder) [interp: Yes]; **Bojan Mihajlovski** (CPS).
           </div>
         </div>
 
-        <div class="loc" data-i="1" tabindex="0" role="button" aria-label="Radoviš, North Macedonia: Oct 29, 2025 site visit">
+        <div class="loc" data-i="1">
           <div class="t">🧭 Radoviš, North Macedonia 🇲🇰</div>
           <div class="d">Oct 29, 2025 (site visit)</div>
-          <div class="org small">CBC: LAG Plackovica — Mr. Stole Georgiev. Same-day return to Skopje.</div>
+          <div class="org small">CBC: LAG Plackovica — Mr. Stole Georgiev. **Visit is 12:00–16:00.** Same-day return to Skopje.</div>
         </div>
 
-        <div class="loc" data-i="2" tabindex="0" role="button" aria-label="Prishtina, Kosovo: Oct 30, 2025 same-day">
+        <div class="loc" data-i="2">
           <div class="t">💼 Prishtina, Kosovo 🇽🇰</div>
           <div class="d">Oct 30, 2025 (same-day)</div>
           <div class="org small">
-            MAFRD — Mr. Tahir Ahmeti (CFP) [interp: Yes].<br/>
-            Kosovo Forestry Agency (Dir. for Forest Management) — Mr. Menderes Ibra.<br/>
-            14:00–15:00 CPS meeting — Ms. Arlinda Gashi (CPS).<br/>
-            15:00–17:00 CBC: Peer Educators Network. Return to Skopje.
+            **MAFRD** — Mr. Tahir Ahmeti (CFP) [interp: Yes].<br/>
+            **Kosovo Forestry Agency** (Dir. for Forest Management) — Mr. Menderes Ibra.<br/>
+            **CPS** meeting — Ms. Arlinda Gashi (**14:00–15:00**).<br/>
+            CBC: **Peer Educators Network** (**15:00–17:00**). Return to Skopje.
           </div>
         </div>
 
-        <div class="loc" data-i="3" tabindex="0" role="button" aria-label="Niš, Serbia: Oct 31, 2025 morning">
+        <div class="loc" data-i="3">
           <div class="t">🌿 Niš, Serbia 🇷🇸</div>
           <div class="d">Oct 31, 2025 (AM)</div>
-          <div class="org small">CBC: Biological Society “Dr. Sava Petrović” (meeting). PM transfer to Belgrade.</div>
+          <div class="org small">CBC: Biological Society “Dr. Sava Petrović” (**11:00–13:30**). PM transfer to Belgrade.</div>
         </div>
 
-        <div class="loc" data-i="4" tabindex="0" role="button" aria-label="Belgrade, Serbia: Oct 31 – Nov 3, 2025">
+        <div class="loc" data-i="4">
           <div class="t">🏰 Belgrade, Serbia 🇷🇸</div>
           <div class="d">Oct 31 – Nov 3, 2025</div>
           <div class="org small">
             1–2 Nov: Weekend (summary/free).<br/>
-            3 Nov (09:00–10:30): Directorate of Forests — Mr. Vladimir Nikolić (CFP).<br/>
-            3 Nov (11:00–12:00): Faculty of Forestry (Univ. of Belgrade) — Prof. Slobodan Milanović.<br/>
-            3 Nov (14:00–15:30): Helvetas Serbia — Mr. Nenad Celarevic (backstopper).<br/>
-            3 Nov (16:00–17:00): Ms. Ana Stefanović (CPS).
+            **3 Nov:** **Faculty of Forestry** (Prof. Slobodan Milanović) **09:00–10:00**; **Directorate of Forests** (Mr. Vladimir Nikolić, CFP) **10:30–12:00** [Correction applied].<br/>
+            **3 Nov:** **Helvetas Serbia** (Mr. Nenad Celarevic, backstopper); **Ms. Ana Stefanović** (CPS) **16:00–17:00** (incl. Ana Pajkovic, NPO SDC (tbc)).
           </div>
         </div>
 
-        <div class="loc" data-i="5" tabindex="0" role="button" aria-label="Srbac, Republika Srpska (BiH): Nov 4, 2025">
+        <div class="loc" data-i="5">
           <div class="t">🌲 Srbac, Republika Srpska (BiH) 🇧🇦</div>
           <div class="d">Nov 4, 2025</div>
           <div class="org small">
-            CBC: Association “C.E.Z.A.R.” (13:30–15:30).<br/>
-            16:30–17:30: Meeting with Mr. Miroslav Rakita (CPS). Transfer to Banja Luka.
+            CBC: Association “C.E.Z.A.R.” (**13:30–15:30**).<br/>
+            CPS meeting: Mr. Miroslav Rakita (**16:30–17:30**). Transfer to Banja Luka.
           </div>
         </div>
 
-        <div class="loc" data-i="6" tabindex="0" role="button" aria-label="Banja Luka, Republika Srpska (BiH): Nov 5, 2025">
+        <div class="loc" data-i="6">
           <div class="t">🌳 Banja Luka, Republika Srpska (BiH) 🇧🇦</div>
           <div class="d">Nov 5, 2025</div>
           <div class="org small">
-            09:00–10:30: Ministry of Agriculture, Forestry & Water Management — Mr. Slavko Stupar (CFP) [interp: Yes].<br/>
-            10:30–11:30: Public Enterprise “Šume Republike Srpske” — Mr. Saša Ljubojević.<br/>
+            **Ministry of Agriculture, Forestry & Water Management** — Mr. Slavko Stupar (CFP) [interp: Yes] **09:00–10:30**.<br/>
+            **Public Enterprise “Šume Republike Srpske”** — Mr. Saša Ljubojević **10:30–11:30**.<br/>
             PM transfer to Sarajevo.
           </div>
         </div>
 
-        <div class="loc" data-i="7" tabindex="0" role="button" aria-label="Sarajevo, Federation of BiH: Nov 5 – Nov 7, 2025">
+        <div class="loc" data-i="7">
           <div class="t">🏛️ Sarajevo, Federation of BiH 🇧🇦</div>
           <div class="d">Nov 5 (late) – Nov 7, 2025</div>
           <div class="org small">
-            6 Nov (09:00–10:30): Federal MoA, Water Mgmt & Forestry — Mr. Emir Caushević (CFP) [interp: Yes].<br/>
-            6 Nov (10:30–11:30): Federal Civil Protection Agency — Mr. Ramo Dautbašić [interp: Yes].<br/>
-            6 Nov (11:30–13:00): FEA — Forestry & Environmental Action (CBC, BIH/SRB).<br/>
-            6 Nov (14:30–16:00): Online debrief (Evaluators, SDC, Embassy of Switzerland (MK), Farmahem).<br/>
+            **6 Nov (Day 11):** **FEA (CBC)** **09:00–10:30** [Correction applied]; **Federal Ministry of Agriculture** (Mr. Emir Caushević, CFP) **10:30–12:00** [Correction applied]; **Federal Civil Protection Agency** (Mr. Ramo Dautbašić) **12:00–13:00** [Correction applied].<br/>
+            **6 Nov (Online):** Debriefing (Evaluators, SDC, Embassy of Switzerland, Farmahem) **14:30–16:00**; **Mr. Srdjan Shashic** (CPS, MNE) **16:00–17:00**.<br/>
             7 Nov: Departures (Switzerland & Greece).
           </div>
         </div>
@@ -161,38 +151,36 @@
             <div class="stat"><div class="n">12</div><div class="l">Days</div></div>
             <div class="stat"><div class="n">8</div><div class="l">Cities</div></div>
             <div class="stat"><div class="n">4</div><div class="l">Countries</div></div>
-            <div class="stat"><div class="n">25+</div><div class="l">Organizations</div></div>
+            <div class="stat"><div class="n">27+</div><div class="l">Organizations*</div></div>
           </div>
+          <div class="small" style="margin-top:8px">*Including online interviews and joint meetings.</div>
         </div>
       </div>
 
       <div class="card hotels">
         <h3>🏨 Hotels (suggested)</h3>
         <b>Skopje (27–30 Oct)</b><br/>
-        • Bushi Resort & Spa — city center; good access to REA/RFMC/MAFWE.<br/>
-        • Ibis Skopje City Center — business option, walkable.<br/><br/>
+        • **City Park Hotel** (as per agenda) / Bushi Resort & Spa / Ibis Skopje City Center.<br/><br/>
 
         <b>Belgrade (31 Oct–3 Nov)</b><br/>
-        • Mark Hotel — central; suitable for meetings nearby.<br/>
-        • Saint Ten / Courtyard by Marriott — business standard.<br/><br/>
+        • **Belgrade Art Hotel** (as per agenda) / Mark Hotel / Saint Ten / Courtyard by Marriott.<br/><br/>
 
         <b>Banja Luka (4 Nov)</b><br/>
-        • Courtyard by Marriott — business option; reliable late check-in.<br/><br/>
+        • **Courtyard by Marriott** (as per agenda).<br/><br/>
 
         <b>Sarajevo (5–7 Nov)</b><br/>
-        • Courtyard by Marriott — Intl. standard; walkable to Federal Ministry/FEA. (Recommended)<br/>
-        • Aparthotel Centar — lower cost; apartment style.
+        • **Courtyard by Marriott** (as per agenda, recommended) / Aparthotel Centar.
         <div class="small" style="margin-top:8px">
           Overnights: Skopje (27–30 Oct), Belgrade (31 Oct–3 Nov), Banja Luka (4 Nov), Sarajevo (5–6 Nov). Depart 7 Nov.
         </div>
       </div>
 
       <div class="card contacts">
-        <h3>🚗 Local Contacts / Drivers</h3>
-        <b>Skopje (MKD):</b> Ida Blaževska — <a href="mailto:ida.blazevska@gmail.com">ida.blazevska@gmail.com</a> — +389 71 277 193<br/>
-        <b>Prishtina (KS):</b> Edmond Gjonbalaj — <a href="mailto:edmondgjonbalaj@gmail.com">edmondgjonbalaj@gmail.com</a> — +383 44 384 841<br/>
-        <b>Republika Srpska (BiH):</b> Dejan Milinović — <a href="mailto:dejan.milinovic@flf.unibl.org">dejan.milinovic@flf.unibl.org</a> — +387 65 870 046<br/>
-        <b>Sarajevo (FBiH):</b> Benjamin Sarhatlić — <a href="mailto:info@agencijaprevod.ba">info@agencijaprevod.ba</a> — +387 61 393 777
+        <h3>🗣️ Local Interpreters / Drivers (as per agenda)</h3>
+        **Skopje (MKD):** Ida Blaževska — +389 71 277 193<br/>
+        **Prishtina (KS):** Edmond Gjonbalaj — +383 44 384 841<br/>
+        **Republika Srpska (BiH):** Dejan Milinović — +387 65 870 046<br/>
+        **Sarajevo (FBiH):** Benjamin Sarhatlić — +387 61 393 777
       </div>
 
       <div class="card">
@@ -220,57 +208,60 @@
     { name:"Skopje, North Macedonia", flag:"🇲🇰", icon:"🏛️", coords:[41.9973,21.4280],
       dates:"Oct 27–30, 2025",
       details:[
-        "28 Oct: Farmahem (REA) — C. Nikolovski; M. Sterjovska; K. Atanasovska; J. P. Andonovska; S. Shosholceva",
-        "28 Oct: MAFWE — Mr. Jordan Zdravkovski (CFP) [interp: Yes]",
-        "28 Oct: RFMC — Prof. Nikola Nikolov; Mr. Jakob Kiprovski; Mr. Velian Jagev",
-        "29 Oct (AM, Skopje): Public Enterprise “Pastures” — Ms. Tatjana Milcevska [interp: Yes]",
-        "29 Oct (11:00–12:00): Meeting with Bojan Mihajlovski (CPS)"
+        "27 Oct (Day 1): Swiss Embassy — Carmen Thönissen & Stanislava Dodeva (10:00–11:30)",
+        "27 Oct (Online): Srdjan Pejovic (CFP, MNE), Ylli Hoxha (CFP, ALB), Arjol Lila (CPS, ALB)",
+        "28 Oct (Day 2): Farmahem (REA) — Cvetan Nikolovski, Marija Sterjovska, Katerina Atanasovska, Jasminka P. Andonovska, Simona Shosholceva, Marjana Shushlevska (09:00–11:00)",
+        "28 Oct: MAFWE — Mr. Jordan Zdravkovski (CFP) [interp: Yes] (11:30–13:00)",
+        "28 Oct: RFMC — Prof. Nikola Nikolov, Jakob Kiprovski, Velian Jagev, Mihajlo Risteski (14:00–16:00)",
+        "29 Oct (AM, Day 3): Public Enterprise “Pastures” — Ms. Tatjana Milcevska (Stakeholder) [interp: Yes] (09:00–10:30)",
+        "29 Oct: Meeting with Bojan Mihajlovski (CPS) (11:00–12:00)"
       ]},
     { name:"Radoviš, North Macedonia", flag:"🇲🇰", icon:"🧭", coords:[41.6383,22.4647],
       dates:"Oct 29, 2025",
-      details:["CBC site visit: LAG Plackovica — Mr. Stole Georgiev","Same-day return to Skopje"]},
+      details:["CBC site visit: LAG Plackovica — Mr. Stole Georgiev (12:00–16:00)","Same-day return to Skopje"]},
     { name:"Prishtina, Kosovo", flag:"🇽🇰", icon:"💼", coords:[42.6629,21.1655],
       dates:"Oct 30, 2025 (same-day)",
       details:[
-        "MAFRD — Mr. Tahir Ahmeti (CFP) [interp: Yes]",
-        "Kosovo Forestry Agency — Directorate for Forest Management — Mr. Menderes Ibra",
-        "14:00–15:00: Meeting with Ms. Arlinda Gashi (CPS)",
-        "15:00–17:00: CBC: Peer Educators Network",
+        "MAFRD — Mr. Tahir Ahmeti (CFP) [interp: Yes] (10:00–11:30)",
+        "Kosovo Forestry Agency — Directorate for Forest Management — Mr. Menderes Ibra (11:30–12:30)",
+        "Meeting with Ms. Arlinda Gashi (CPS) (14:00–15:00)",
+        "CBC: Peer Educators Network (15:00–17:00)",
         "Return to Skopje"
       ]},
     { name:"Niš, Serbia", flag:"🇷🇸", icon:"🌿", coords:[43.3209,21.8958],
       dates:"Oct 31, 2025 (AM)",
-      details:["CBC: Biological Society “Dr. Sava Petrović” (meeting)","PM transfer to Belgrade"]},
+      details:["CBC: Biological Society “Dr. Sava Petrović” (meeting) (11:00–13:30)","PM transfer to Belgrade"]},
     { name:"Belgrade, Serbia", flag:"🇷🇸", icon:"🏰", coords:[44.7866,20.4489],
       dates:"Oct 31 – Nov 3, 2025",
       details:[
         "1–2 Nov: Weekend (summary/free)",
-        "3 Nov (09:00–10:30): Directorate of Forests — Mr. Vladimir Nikolić (CFP)",
-        "3 Nov (11:00–12:00): Faculty of Forestry — Prof. Slobodan Milanović",
-        "3 Nov (14:00–15:30): Helvetas Serbia — Mr. Nenad Celarevic",
-        "3 Nov (16:00–17:00): Ms. Ana Stefanović (CPS)"
+        "3 Nov (Day 8): Faculty of Forestry — Prof. Slobodan Milanović (09:00–10:00)", // Corrected time
+        "3 Nov: Directorate of Forests — Mr. Vladimir Nikolić (CFP) (10:30–12:00)", // Corrected time
+        "3 Nov: Helvetas Serbia — Mr. Nenad Celarevic (backstopper) (14:00–15:30)",
+        "3 Nov: Ms. Ana Stefanović (CPS) & Ana Pajkovic, NPO SDC (tbc) (16:00–17:00)"
       ]},
     { name:"Srbac, Republika Srpska (BiH)", flag:"🇧🇦", icon:"🌲", coords:[45.0967,17.5253],
       dates:"Nov 4, 2025",
       details:[
         "CBC: Association “C.E.Z.A.R.” (13:30–15:30)",
-        "16:30–17:30: Meeting with Mr. Miroslav Rakita (CPS)",
+        "Meeting with Mr. Miroslav Rakita (CPS) (16:30–17:30)",
         "Trip to Banja Luka"
       ]},
     { name:"Banja Luka, Republika Srpska (BiH)", flag:"🇧🇦", icon:"🌳", coords:[44.7722,17.1910],
       dates:"Nov 5, 2025",
       details:[
-        "09:00–10:30: RS Ministry of Agriculture, Forestry & Water Mgmt — Mr. Slavko Stupar (CFP) [interp: Yes]",
-        "10:30–11:30: Public Enterprise “Šume Republike Srpske” — Mr. Saša Ljubojević",
+        "5 Nov (Day 10): RS Ministry of Agriculture, Forestry & Water Mgmt — Mr. Slavko Stupar (CFP) [interp: Yes] (09:00–10:30)",
+        "5 Nov: Public Enterprise “Šume Republike Srpske” — Mr. Saša Ljubojević (10:30–11:30)",
         "PM transfer to Sarajevo"
       ]},
     { name:"Sarajevo, Federation of BiH", flag:"🇧🇦", icon:"🏛️", coords:[43.8563,18.4131],
       dates:"Nov 5 (late) – Nov 7, 2025",
       details:[
-        "6 Nov (09:00–10:30): Federal MoA, Water Mgmt & Forestry — Mr. Emir Caushević (CFP) [interp: Yes]",
-        "6 Nov (10:30–11:30): Federal Civil Protection Agency — Mr. Ramo Dautbašić [interp: Yes]",
-        "6 Nov (11:30–13:00): FEA — Forestry & Environmental Action (CBC, BIH/SRB)",
-        "6 Nov (14:30–16:00): Online debrief — Evaluators; SDC; Embassy of Switzerland (MK); Farmahem",
+        "6 Nov (Day 11): FEA — Forestry & Environmental Action (CBC, BIH/SRB) (09:00–10:30)", // Corrected order/time
+        "6 Nov: Federal MoA, Water Mgmt & Forestry — Mr. Emir Caushević (CFP) [interp: Yes] (10:30–12:00)", // Corrected order/time
+        "6 Nov: Federal Civil Protection Agency — Mr. Ramo Dautbašić [interp: Yes] (12:00–13:00)", // Corrected order/time
+        "6 Nov (Online): Debriefing — Evaluators; SDC; Embassy of Switzerland (MK); Farmahem (14:30–16:00)",
+        "6 Nov (Online): Interview with Mr. Srdjan Shashic (CPS, MNE) (16:00–17:00)", // Added meeting
         "7 Nov: Departures (Switzerland & Greece)"
       ]}
   ];
@@ -281,7 +272,7 @@
     { attribution:'© OpenStreetMap contributors', crossOrigin:true }).addTo(map);
 
   // Helper for custom icons
-  function iconBadge(emoji, bg='var(--green)') { // Χρήση CSS μεταβλητής για το χρώμα
+  function iconBadge(emoji, bg='#2E8B57'){
     return L.divIcon({
       html:`<div style="background:${bg};width:40px;height:40px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,.3)">${emoji}</div>`,
       className:'x', iconSize:[40,40], iconAnchor:[20,20], popupAnchor:[0,-18]
@@ -305,16 +296,12 @@
   function showRoute(){
     if(route){ map.removeLayer(route); route=null; }
     const coords = locations.map(l=>l.coords);
-    route = L.polyline(coords,{color:getComputedStyle(document.documentElement).getPropertyValue('--green'),weight:4,opacity:.85,dashArray:'10,5',lineCap:'round',lineJoin:'round'}).addTo(map);
+    route = L.polyline(coords,{color:'#2E8B57',weight:4,opacity:.85,dashArray:'10,5',lineCap:'round',lineJoin:'round'}).addTo(map);
     fitAll(); stopAnim();
   }
   function fitAll(){
     const group = new L.featureGroup([...(route?[route]:[]), ...markers]);
-    if (group.getLayers().length > 0) { // Έλεγχος για αποφυγή σφάλματος σε κενό group
-      map.fitBounds(group.getBounds().pad(0.08));
-    } else {
-      map.setView([43.4, 20.3], 6); // Επαναφορά αν δεν υπάρχουν σημεία
-    }
+    map.fitBounds(group.getBounds().pad(0.08));
     stopAnim();
   }
   function stopAnim(){
@@ -333,16 +320,8 @@
       const loc=locations[i];
       map.setView(loc.coords, 11, {animate:true,duration:1.2});
       markers[i].openPopup();
-      
-      // Highlight sidebar item
       document.querySelectorAll('.loc').forEach(el=>el.classList.remove('active'));
-      const active=document.querySelector(`.loc[data-i="${i}"]`); 
-      if(active) {
-        active.classList.add('active');
-        // Scroll sidebar to show active element
-        active.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-
+      const active=document.querySelector(`.loc[data-i="${i}"]`); if(active) active.classList.add('active');
       i=(i+1)%locations.length;
       animTimer=setTimeout(step, 3000);
     })();
@@ -359,22 +338,11 @@
       el.classList.add('active');
     });
   });
-  
-  // Προσθήκη υποστήριξης για Enter key στο sidebar
-  document.querySelectorAll('.loc').forEach((el)=>{
-    el.addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        el.click();
-      }
-    });
-  });
-
 
   // Ensure Leaflet knows final size
   window.addEventListener('load', ()=>{
     map.invalidateSize(true);
-    showRoute(); // Εμφάνιση της διαδρομής κατά την αρχική φόρτωση
+    showRoute();
   });
   window.addEventListener('resize', ()=> map.invalidateSize(true));
 </script>
